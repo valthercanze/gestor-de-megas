@@ -61,6 +61,29 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
 .mini.x .ic{width:1em;height:1em;vertical-align:-.15em}
 .al .ic{vertical-align:-.3em}
 .seg .mini{padding:7px 4px;font-size:.85rem}
+.rep{background:linear-gradient(155deg,#0d1b2a 0%,#12251c 100%);color:#EAF2ED;border-radius:18px;padding:18px 16px;margin-bottom:6px}
+.rep .rtop{display:flex;align-items:center;gap:7px;font-size:.85rem;color:#9CB2A8;margin-bottom:10px}
+.rep .rtop .dot{width:7px;height:7px;border-radius:99px;background:var(--g)}
+.rep h1{color:#fff;font-size:1.5rem;margin-bottom:12px}
+.rep .stat{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#fff}
+.rep .stat small{color:#9CB2A8}
+.rep .stat.hero{background:var(--g);border-color:var(--g);color:var(--g-ink)}
+.repbtn{margin-top:14px;width:100%;background:var(--g);color:var(--g-ink);border:0;border-radius:12px;padding:13px;font-weight:600;display:flex;justify-content:center;align-items:center;gap:8px;cursor:pointer;font-size:1rem}
+.repbody{margin-bottom:4px}
+.backlink{display:flex;align-items:center;gap:6px;background:none;border:0;color:var(--mute);font:inherit;font-weight:500;cursor:pointer;padding:0;margin-bottom:18px}
+.backlink .ic{width:1.2em;height:1.2em}
+/* Resumo de Vendas inspirado no layout de referência. */
+#t-sales{--bg:#141414;--ink:#F2F2F2;--mute:#A8A8A8;--card:#222222;--line:#3A3A3A;--g:#E60000;--g-ink:#FFFFFF;background:#141414;color:#F2F2F2;margin:0 -16px;padding:20px 16px 28px;min-height:calc(100vh - 84px)}
+#t-sales h1{font-size:1.6rem;margin:0 0 22px;color:#F2F2F2}
+#t-sales .stat{border-radius:16px;padding:14px;background:#222222;border-color:#3A3A3A;color:#F2F2F2}
+#t-sales .stat small{color:#A8A8A8;opacity:1}
+#t-sales .stat.hero{background:#E60000;border-color:#E60000;color:#FFFFFF}
+#t-sales .stat.hero small{color:#F2F2F2}
+body.sales-active{background:#141414;color:#F2F2F2;border-top-color:#141414}
+body.sales-active #top{background:#141414}
+body.sales-active nav{background:#222222;border-color:#3A3A3A}
+body.sales-active nav button{color:#A8A8A8}
+body.sales-active nav button.on{color:#E60000}
 </style>
 </head>
 <body>
@@ -70,6 +93,7 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
 <section id="t-sales" class="tab on">
   <h1>Vendas</h1>
   <div class="grid" id="sstats"></div>
+  <button class="repbtn" data-act="gorep" data-id="sales"><span>Ver relatório</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   <h2>Registar venda</h2>
   <div class="card">
     <input id="s-cli" placeholder="Nome do cliente (opcional)"><input id="s-num" type="tel" inputmode="numeric" placeholder="Número do cliente (9 dígitos)">
@@ -82,13 +106,6 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
   </div>
   <h2>Últimas vendas</h2>
   <div class="card" id="slist"></div>
-  <h2>Filtrar por datas</h2>
-  <div class="card">
-    <div class="seg"><button class="mini" data-act="fq" data-id="hoje">Hoje</button><button class="mini" data-act="fq" data-id="ontem">Ontem</button><button class="mini" data-act="fq" data-id="7">7 dias</button><button class="mini" data-act="fq" data-id="mes">Este mês</button></div>
-    <div class="grid"><div><label class="note" for="f-de">De</label><input id="f-de" type="date" style="margin-top:4px"></div><div><label class="note" for="f-ate">Até</label><input id="f-ate" type="date" style="margin-top:4px"></div></div>
-    <div class="grid" id="fstats" style="margin-top:12px"></div>
-    <div id="flist" style="margin-top:8px"></div>
-  </div>
   <h2>Cópia de segurança</h2>
   <div class="card">
     <p class="note" style="margin:0">Funciona sem internet. Os dados ficam guardados neste telemóvel e continuam lá quando desliga. Guarde um ficheiro de cópia de vez em quando.</p>
@@ -100,6 +117,15 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
     <p class="note" style="margin:0">Apaga vendas, dívidas, atualizações, stock e clientes deste telemóvel. Gere antes uma cópia de segurança se precisar deles. As definições, como o código do saldo, mantêm-se.</p>
     <button class="btn" id="wipe" data-act="wipe" style="background:var(--red);color:var(--red-ink)">Apagar todos os dados</button>
   </div>
+</section>
+
+<section id="rep-sales" class="tab">
+  <button class="backlink" data-back="sales"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Voltar a Vendas</button>
+  <h1>Relatório de vendas</h1>
+  <div class="seg"><button class="mini" data-act="fq" data-id="hoje">Hoje</button><button class="mini" data-act="fq" data-id="ontem">Ontem</button><button class="mini" data-act="fq" data-id="7">7 dias</button><button class="mini" data-act="fq" data-id="mes">Este mês</button></div>
+  <div class="grid"><div><label class="note" for="f-de">De</label><input id="f-de" type="date" style="margin-top:4px"></div><div><label class="note" for="f-ate">Até</label><input id="f-ate" type="date" style="margin-top:4px"></div></div>
+  <div class="grid" id="fstats" style="margin-top:12px"></div>
+  <div id="flist" style="margin-top:8px"></div>
 </section>
 
 <section id="t-debts" class="tab">
@@ -143,10 +169,10 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
     <input id="st-when" type="datetime-local" style="margin-top:4px">
     <button class="btn" data-act="addstock">Registar compra</button>
   </div>
-  <h2>Stock, megas e lucro</h2>
+  <h2>Stock e megas</h2>
   <div class="grid" id="mstats"></div>
   <div class="grid" id="lstats" style="margin-top:10px"></div>
-  <p class="note">Lucro = o que vendeu menos o que gastou a comprar stock. As vendas a fiado contam como vendidas, mesmo que ainda não tenha recebido.</p>
+  <button class="repbtn" data-act="gorep" data-id="stock"><span>Ver relatório de lucro</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   <h2>Ajustar megas</h2>
   <div class="card">
     <input id="m-set" type="number" inputmode="decimal" placeholder="Saldo real agora (MB)">
@@ -158,15 +184,26 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
     <input id="m-nota" placeholder="Nota (opcional)">
     <button class="btn" data-act="usomb">Registar uso pessoal</button>
   </div>
-  <h2>Megas vendidos</h2>
-  <div class="grid" id="vstats"></div>
-  <div class="card" id="vdias" style="margin-top:10px"></div>
-  <h2>Megas vendidos por semana</h2>
-  <div class="card" id="vsem"></div>
   <h2>Compras de stock</h2>
   <div class="card" id="stlist"></div>
   <h2>Movimentos de megas</h2>
   <div class="card" id="mlist"></div>
+</section>
+
+<section id="rep-stock" class="tab">
+  <button class="backlink" data-back="stock"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Voltar a Stock</button>
+  <h1>Relatório de Stock</h1>
+  <h2>Filtrar período</h2>
+  <div class="seg"><button class="mini" data-act="sfq" data-id="hoje">Hoje</button><button class="mini" data-act="sfq" data-id="ontem">Ontem</button><button class="mini" data-act="sfq" data-id="7">7 dias</button><button class="mini" data-act="sfq" data-id="mes">Este mês</button></div>
+  <div class="grid"><div><label class="note" for="sf-de">De</label><input id="sf-de" type="date" style="margin-top:4px"></div><div><label class="note" for="sf-ate">Até</label><input id="sf-ate" type="date" style="margin-top:4px"></div></div>
+  <h2>Lucros, vendas e despesas</h2>
+  <div class="grid" id="lstats2"></div>
+  <h2>Megas vendidos</h2>
+  <div class="grid" id="vstats"></div>
+  <h2>Megas vendidos por dia</h2>
+  <div class="card" id="vdias"></div>
+  <h2>Megas vendidos por semana</h2>
+  <div class="card" id="vsem"></div>
 </section>
 
 <section id="t-cli" class="tab">
@@ -247,7 +284,7 @@ function rUps(){
 function rAlerts(){
   $("alerts").innerHTML=alerts.map(function(a){return '<div class="al"><span>'+IC.clock+' '+esc(a.txt)+'</span><span>'+(hasNum(a.id)?'<button data-act="sendup" data-id="'+a.id+'">Enviar</button> ':'')+'<button data-act="dis" data-id="'+a.id+'">OK</button></span></div>'}).join("");
 }
-function rBal(){var b=saldo(),e=$("bal");if(e)e.innerHTML='<div class="balbar'+(b<=0?' neg':'')+'" data-tab="stock"><span style="display:flex;gap:8px;align-items:center">'+IC.data+' Megas disponíveis</span><b>'+mbs(b)+(Math.abs(b)>=1024?' (≈ '+nf(b/1024)+' GB)':'')+'</b></div>'}
+function rBal(){var b=saldo(),e=$("bal"),sales=cur==="sales";document.body.classList.toggle("sales-active",sales);if(e)e.innerHTML='<div class="balbar'+(b<=0?' neg':'')+'" data-tab="stock"><span style="display:flex;gap:8px;align-items:center">'+IC.data+' Megas disponíveis</span><b>'+mbs(b)+(Math.abs(b)>=1024?' (≈ '+nf(b/1024)+' GB)':'')+'</b></div>'}
 function nf(n){return Number(n||0).toLocaleString("pt-PT",{maximumFractionDigits:1})}
 function mbn(x){var n=parseFloat(String(x).replace(",",".").replace(/[^0-9.]/g,""));return n>0?n:0}
 function mbs(n){return nf(n)+" MB"}
@@ -260,27 +297,32 @@ function rMb(){
   var lab={compra:"Compra",envio:"Envio a cliente",pessoal:"Uso pessoal",ajuste:"Ajuste"};
   var l=S.mb.slice().sort(function(a,b){return b.t-a.t}).slice(0,50);
   $("mlist").innerHTML=l.length?l.map(function(x){return '<div class="row"><div class="t"><b>'+lab[x.tipo]+(x.nota?' · '+esc(x.nota):'')+'</b><small>'+fd(x.t)+'</small></div><div class="acts"><b'+(x.mb<0?' style="color:var(--red)"':'')+'>'+(x.mb>0?'+':'−')+nf(Math.abs(x.mb))+' MB</b><button class="mini x" data-act="delmb" data-id="'+x.id+'" aria-label="Apagar movimento">'+IC.x+'</button></div></div>'}).join(""):'<div class="empty">Ainda não há movimentos de megas. Defina o saldo que tem agora.</div>'}
-function rVend(){
-  var e=S.mb.filter(function(x){return x.tipo==="envio"}),n=new Date(),d0=new Date().setHours(0,0,0,0),m0=new Date(n.getFullYear(),n.getMonth(),1).getTime();
-  var sm=function(f,t){return -e.filter(function(x){return x.t>=f&&(t==null||x.t<t)}).reduce(function(a,x){return a+x.mb},0)};
-  var bx=function(l,v){return '<div class="stat"><small>'+l+'</small><div class="big">'+mbs(v)+'</div></div>'};
-  $("vstats").innerHTML=bx("Hoje",sm(d0))+bx("Últimos 7 dias",sm(d0-6*864e5))+bx("Este mês",sm(m0))+bx("Total",sm(0));
+function rStockReport(){
+  var from=pd($("sf-de").value),to=pd($("sf-ate").value),bx=function(label,value){return '<div class="stat"><small>'+label+'</small><div class="big">'+value+'</div></div>'};
+  if(!from||!to){$("lstats2").innerHTML='<div class="empty">Escolha as datas para ver os valores financeiros do período.</div>'}
+  else{
+    if(from>to){var tmp=from;from=to;to=tmp}
+    var start=from.getTime(),end=new Date(to.getFullYear(),to.getMonth(),to.getDate()+1).getTime(),inRange=function(x){return x.t>=start&&x.t<end};
+    var sales=S.sales.filter(inRange),stock=S.stock.filter(inRange),sold=sales.reduce(function(t,x){return t+(x.val||0)},0),spent=stock.reduce(function(t,x){return t+(x.val||0)},0),profit=sold-spent;
+    $("lstats2").innerHTML='<div class="stat hero"'+(profit<0?' style="background:var(--red);border-color:var(--red);color:var(--red-ink)"':'')+'><small>Lucro no período</small><div class="big">'+mt(profit)+'</div></div>'+bx("Vendido no período",mt(sold))+bx("Gasto em stock",mt(spent));
+  }
+  var now=new Date(),d0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),e=S.mb.filter(function(x){return x.tipo==="envio"}),sm=function(f,t){return -e.filter(function(x){return x.t>=f&&(t==null||x.t<t)}).reduce(function(a,x){return a+x.mb},0)},month0=new Date(now.getFullYear(),now.getMonth(),1).getTime(),week0=new Date(d0);week0.setDate(week0.getDate()-6);
+  $("vstats").innerHTML=bx("Hoje",mbs(sm(d0)))+bx("Últimos 7 dias",mbs(sm(week0.getTime())))+bx("Este mês",mbs(sm(month0)))+bx("Total",mbs(sm(0)));
   var rows=[],mx=1,i,f,v;
   for(i=0;i<7;i++){f=d0-i*864e5;v=sm(f,f+864e5);mx=Math.max(mx,v);rows.push([i===0?"Hoje":i===1?"Ontem":new Date(f).toLocaleDateString("pt-PT",{weekday:"short",day:"2-digit",month:"2-digit"}),v])}
   $("vdias").innerHTML=rows.map(function(r){return '<div class="row" style="display:block"><div style="display:flex;justify-content:space-between"><span>'+r[0]+'</span><b>'+mbs(r[1])+'</b></div><div style="height:6px;border-radius:3px;background:var(--line);margin-top:5px"><div style="height:6px;border-radius:3px;background:var(--g);width:'+Math.round(r[1]/mx*100)+'%"></div></div></div>'}).join("");
-  var lb=["Últimos 7 dias","Há 8 a 14 dias","Há 15 a 21 dias","Há 22 a 28 dias"];
-  $("vsem").innerHTML=lb.map(function(l,k){var f=d0-(6+7*k)*864e5;return '<div class="row"><span>'+l+'</span><b>'+mbs(sm(f,f+7*864e5))+'</b></div>'}).join("");
+  var labels=["Últimos 7 dias","Há 8 a 14 dias","Há 15 a 21 dias","Há 22 a 28 dias"];
+  $("vsem").innerHTML=labels.map(function(label,k){var f=d0-(6+7*k)*864e5;return '<div class="row"><span>'+label+'</span><b>'+mbs(sm(f,f+7*864e5))+'</b></div>'}).join("");
 }
-function rStock(){rMb();rVend();
-  var now=new Date(),d0=new Date().setHours(0,0,0,0),w0=Date.now()-6048e5,m0=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+function rStock(){rMb();
+  var now=new Date(),d0=new Date().setHours(0,0,0,0);
   var sp=function(a,f){return a.filter(function(x){return f(x.t)}).reduce(function(t,x){return t+(x.val||0)},0)};
-  var lu=function(f){return sp(S.sales,f)-sp(S.stock,f)},all=function(){return true};
-  var mes=lu(function(t){return t>=m0}),owed=S.debts.reduce(function(a,d){return a+d.rest},0);
-  var box=function(l,v){return '<div class="stat"><small>'+l+'</small><div class="big"'+(v<0?' style="color:var(--red)"':'')+'>'+mt(v)+'</div></div>'};
-  $("lstats").innerHTML='<div class="stat hero"'+(mes<0?' style="background:var(--red);border-color:var(--red);color:var(--red-ink)"':'')+'><small>Lucro este mês</small><div class="big">'+mt(mes)+'</div></div>'+
-   box("Lucro hoje",lu(function(t){return t>=d0}))+box("Lucro 7 dias",lu(function(t){return t>=w0}))+box("Lucro total",lu(all))+box("Gasto em stock",sp(S.stock,all))+box("Vendido no total",sp(S.sales,all))+box("Por receber (dívidas)",owed);
+  var hoje=sp(S.sales,function(t){return t>=d0})-sp(S.stock,function(t){return t>=d0});
+  $("lstats").innerHTML='<div class="stat hero"'+(hoje<0?' style="background:var(--red);border-color:var(--red);color:var(--red-ink)"':'')+'><small>Lucro hoje</small><div class="big">'+mt(hoje)+'</div></div>';
   var l=S.stock.slice().sort(function(a,b){return b.t-a.t}).slice(0,50);
-  $("stlist").innerHTML=l.length?l.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.meg||"Stock")+(x.nota?' · '+esc(x.nota):'')+'</b><small>'+fd(x.t)+'</small></div><div class="acts"><b>'+mt(x.val)+'</b><button class="mini x" data-act="delstock" data-id="'+x.id+'" aria-label="Apagar compra">'+IC.x+'</button></div></div>'}).join(""):'<div class="empty">Ainda não registou compras de stock.</div>'}
+  $("stlist").innerHTML=l.length?l.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.meg||"Stock")+(x.nota?' · '+esc(x.nota):'')+'</b><small>'+fd(x.t)+'</small></div><div class="acts"><b>'+mt(x.val)+'</b><button class="mini x" data-act="delstock" data-id="'+x.id+'" aria-label="Apagar compra">'+IC.x+'</button></div></div>'}).join(""):'<div class="empty">Ainda não registou compras de stock.</div>';
+  rStockReport();
+}
 var openC={};
 function groups(){var m={};S.sales.forEach(function(s){var k=s.num||(s.cli?"n:"+s.cli.trim().toLowerCase():"?");var g=m[k]||(m[k]={k:k,name:"",num:"",tot:0,list:[],last:0});g.list.push(s);g.tot+=s.val;if(s.num)g.num=s.num;if(s.t>=g.last){g.last=s.t;if(s.cli)g.name=s.cli}});
  return Object.keys(m).map(function(k){var g=m[k];g.list.sort(function(a,b){return b.t-a.t});g.owed=S.debts.filter(function(d){return(g.num&&(d.nota||"").indexOf(g.num)>=0)||(g.name&&String(d.nome).trim().toLowerCase()===g.name.trim().toLowerCase())}).reduce(function(a,d){return a+d.rest},0);return g}).sort(function(a,b){return b.tot-a.tot})}
@@ -313,10 +355,12 @@ function notify(u){
 }
 function check(){S.ups.forEach(function(u){if(!u.notified&&Date.now()>=u.time-6e5)notify(u)});if(cur==="ups")rUps()}
 
-function show(t){cur=t;["sales","stock","debts","ups","cli"].forEach(function(i){$("t-"+i).classList.toggle("on",i===t)});document.querySelectorAll("nav button").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t)});window.scrollTo(0,0);if(t==="ups")rUps();if(t==="cli")rCli();if(t==="stock")rStock()}
+function show(t){cur=t;["sales","stock","debts","ups","cli"].forEach(function(i){$("t-"+i).classList.toggle("on",i===t)});$("rep-sales").classList.remove("on");$("rep-stock").classList.remove("on");document.querySelectorAll("nav button").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t)});window.scrollTo(0,0);rBal();if(t==="ups")rUps();if(t==="cli")rCli();if(t==="stock")rStock()}
 function num(id){return parseFloat(String($(id).value).replace(",","."))}
 
 var wt;var A={
+ gorep:function(id){["sales","stock","debts","ups","cli"].forEach(function(i){$("t-"+i).classList.remove("on")});$("rep-sales").classList.toggle("on",id==="sales");$("rep-stock").classList.toggle("on",id==="stock");window.scrollTo(0,0);if(id==="sales")rFil()},
+ sfq:function(id){var n=new Date(),end=new Date(n.getFullYear(),n.getMonth(),n.getDate()),start=new Date(end);if(id==="ontem"){start.setDate(start.getDate()-1);end=new Date(start)}else if(id==="7")start.setDate(start.getDate()-6);else if(id==="mes")start=new Date(n.getFullYear(),n.getMonth(),1);$("sf-de").value=dl(start);$("sf-ate").value=dl(end);rStockReport()},
  fq:function(id){var n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate()),a=t,b=t;
   if(id==="ontem"){a=b=new Date(t.getTime()-864e5)}else if(id==="7"){a=new Date(t.getTime()-6*864e5)}else if(id==="mes"){a=new Date(n.getFullYear(),n.getMonth(),1)}
   $("f-de").value=dl(a);$("f-ate").value=dl(b);rFil()},
@@ -379,8 +423,9 @@ var wt;var A={
  bkin:function(){try{var o=JSON.parse($("bk").value);if(!o||!Array.isArray(o.sales))throw 0;S={sales:o.sales||[],debts:o.debts||[],ups:o.ups||[],cfg:o.cfg||{},stock:o.stock||[],mb:o.mb||[]};save();rSales();rDebts();rUps();toast("Dados restaurados.")}catch(e){toast("Cole primeiro uma cópia válida.")}}
 };
 document.addEventListener("click",function(e){
-  var b=e.target.closest("[data-act],[data-tab]");if(!b)return;
+  var b=e.target.closest("[data-act],[data-tab],[data-back]");if(!b)return;
   if(b.dataset.tab)return show(b.dataset.tab);
+  if(b.dataset.back)return show(b.dataset.back);
   A[b.dataset.act](b.dataset.id);
 });
 $("bkf").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$("bk").value=r.result;A.bkin()};r.readAsText(f)});
@@ -391,6 +436,7 @@ $("c-q").addEventListener("input",rCli);
 $("s-plano").addEventListener("change",updPh);$("s-meg").addEventListener("focus",updPh);
 $("cfg-bal").addEventListener("input",function(){S.cfg.bal=this.value.trim();save()});
 $("f-de").value=$("f-ate").value=dl(new Date());["f-de","f-ate"].forEach(function(i){$(i).addEventListener("input",rFil);$(i).addEventListener("change",rFil)});
+  var today=new Date();$("sf-ate").value=dl(today);$("sf-de").value=dl(new Date(today.getFullYear(),today.getMonth(),1));["sf-de","sf-ate"].forEach(function(i){$(i).addEventListener("input",rStockReport);$(i).addEventListener("change",rStockReport)});
 rBal();rCfg();rPend();rSales();rDebts();rUps();check();
 setInterval(check,20000);
 document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});
