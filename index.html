@@ -244,7 +244,15 @@ function rFil(){
     bx("Vendas",sl.length)+bx("Clientes",Object.keys(keys).length)+bx("Megas enviados",mbs(mbv))+bx("Total vendido",mt(vend))+bx("Gasto em stock",mt(gasto))+bx("Média por venda",mt(sl.length?vend/sl.length:0));
   var l=sl.slice().sort(function(x,y){return y.t-x.t}).slice(0,30);
   $("flist").innerHTML=(anon?'<p class="note" style="margin:0 0 6px">'+anon+' venda(s) sem nome nem número não entram na contagem de clientes.</p>':'')+(l.length?l.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.cli||"Cliente")+' · '+esc(x.meg||"megas")+'</b><small>'+fd(x.t)+(x.num?' · '+esc(x.num):'')+'</small></div><b>'+mt(x.val)+'</b></div>'}).join(""):'<div class="empty">Sem vendas neste período.</div>')}
-function rSales(){rFil();
+function totGer(){
+  var totalVendido=S.sales.reduce(function(t,x){return t+(x.val||0)},0),nVendas=S.sales.length;
+  var totalGasto=S.stock.reduce(function(t,x){return t+(x.val||0)},0);
+  var totalMB=-S.mb.filter(function(x){return x.tipo==="envio"}).reduce(function(a,x){return a+x.mb},0);
+  var totalLucro=totalVendido-totalGasto;
+  var bx=function(l,v){return '<div class="stat"><small>'+l+'</small><div class="big">'+v+'</div></div>'};
+  var html=bx("Total geral vendido",mt(totalVendido))+bx("N.º de vendas",nVendas)+bx("Total geral de megas",mbs(totalMB))+bx("Total geral de lucro",mt(totalLucro))+bx("Total geral de gasto em stock",mt(totalGasto));
+  ["sTotais","stTotais"].forEach(function(id){var e=$(id);if(e)e.innerHTML=html})}
+function rSales(){rFil();totGer();
   var now=new Date(),d0=new Date().setHours(0,0,0,0),w0=Date.now()-6048e5,m0=new Date(now.getFullYear(),now.getMonth(),1).getTime();
   var sum=function(f){return S.sales.filter(function(s){return f(s.t)}).reduce(function(a,s){return a+s.val},0)};
   var all=S.sales.reduce(function(a,s){return a+s.val},0),hojeL=S.sales.filter(function(s){return s.t>=d0});
@@ -252,7 +260,6 @@ function rSales(){rFil();
   $("sstats").innerHTML='<div class="stat hero"><small>Vendido hoje</small><div class="big">'+mt(sum(function(t){return t>=d0}))+'</div></div>'+
    [["Últimos 7 dias",sum(function(t){return t>=w0})],["Este mês",sum(function(t){return t>=m0})]].map(function(p){return '<div class="stat"><small>'+p[0]+'</small><div class="big">'+mt(p[1])+'</div></div>'}).join("")+
    '<div class="stat"><small>Vendas hoje</small><div class="big">'+hojeL.length+'</div></div><div class="stat"><small>Clientes</small><div class="big">'+Object.keys(kh).length+'</div></div><div class="stat"><small>Megas disponíveis</small><div class="big">'+mbs(saldo())+'</div></div><div class="stat"><small>Enviados hoje</small><div class="big">'+mbs(-S.mb.filter(function(x){return x.tipo==="envio"&&x.t>=d0}).reduce(function(a,x){return a+x.mb},0))+'</div></div>';
-  var st=$("sTotais");if(st)st.innerHTML='<div class="stat"><small>Total geral</small><div class="big">'+mt(all)+'</div></div><div class="stat"><small>N.º de vendas</small><div class="big">'+S.sales.length+'</div></div>';
   var l=S.sales.slice().sort(function(a,b){return b.t-a.t}).slice(0,30);
   $("slist").innerHTML=l.length?l.map(function(s){return '<div class="row"><div class="t"><b>'+esc(s.cli||"Cliente")+' · '+esc(s.meg||"megas")+'</b><small>'+fd(s.t)+(s.num?' · '+esc(s.num):'')+'</small></div><div class="acts"><b>'+mt(s.val)+'</b><button class="mini x" data-act="delsale" data-id="'+s.id+'" aria-label="Apagar venda">'+IC.x+'</button></div></div>'}).join(""):'<div class="empty">Ainda não há vendas registadas.</div>';
 }
@@ -288,8 +295,7 @@ function rMb(){
 function rStockReport(){
   var bx=function(label,value){return '<div class="stat"><small>'+label+'</small><div class="big">'+value+'</div></div>'};
   var now=new Date(),d0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),e=S.mb.filter(function(x){return x.tipo==="envio"}),sm=function(f,t){return -e.filter(function(x){return x.t>=f&&(t==null||x.t<t)}).reduce(function(a,x){return a+x.mb},0)},month0=new Date(now.getFullYear(),now.getMonth(),1).getTime(),week0=new Date(d0);week0.setDate(week0.getDate()-6);
-  var totalMB=sm(0),totalVend=S.sales.reduce(function(t,x){return t+(x.val||0)},0),totalGasto=S.stock.reduce(function(t,x){return t+(x.val||0)},0),totalLucro=totalVend-totalGasto;
-  $("stTotais").innerHTML=bx("Total geral de megas",mbs(totalMB))+bx("Total geral de lucro",mt(totalLucro))+bx("Total geral de gasto em stock",mt(totalGasto));
+  totGer();
   var from=pd($("sf-de").value),to=pd($("sf-ate").value);
   if(!from||!to){$("lstats2").innerHTML='<div class="empty">Escolha as datas para ver os valores financeiros do período.</div>'}
   else{
