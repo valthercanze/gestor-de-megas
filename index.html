@@ -61,29 +61,10 @@ nav .ic{display:block;width:24px;height:24px;margin:0 auto}
 .mini.x .ic{width:1em;height:1em;vertical-align:-.15em}
 .al .ic{vertical-align:-.3em}
 .seg .mini{padding:7px 4px;font-size:.85rem}
-.rep{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:18px;padding:18px 16px;margin-bottom:6px}
-.rep .rtop{display:flex;align-items:center;gap:7px;font-size:.85rem;color:var(--mute);margin-bottom:10px}
-.rep .rtop .dot{width:7px;height:7px;border-radius:99px;background:var(--g)}
-.rep h1{color:var(--ink);font-size:1.5rem;margin-bottom:12px}
-.rep .stat{background:var(--bg);border:1px solid var(--line);color:var(--ink)}
-.rep .stat small{color:var(--mute)}
-.rep .stat.hero{background:var(--g);border-color:var(--g);color:var(--g-ink)}
 .repbtn{margin-top:14px;width:100%;background:var(--g);color:var(--g-ink);border:0;border-radius:12px;padding:13px;font-weight:600;display:flex;justify-content:center;align-items:center;gap:8px;cursor:pointer;font-size:1rem}
 .repbody{margin-bottom:4px}
 .backlink{display:flex;align-items:center;gap:6px;background:none;border:0;color:var(--mute);font:inherit;font-weight:500;cursor:pointer;padding:0;margin-bottom:18px}
 .backlink .ic{width:1.2em;height:1.2em}
-/* Resumo de Vendas inspirado no layout de referência. */
-#t-sales{--bg:#141414;--ink:#F2F2F2;--mute:#A8A8A8;--card:#222222;--line:#3A3A3A;--g:#E60000;--g-ink:#FFFFFF;background:#141414;color:#F2F2F2;margin:0 -16px;padding:20px 16px 28px;min-height:calc(100vh - 84px)}
-#t-sales h1{font-size:1.6rem;margin:0 0 22px;color:#F2F2F2}
-#t-sales .stat{border-radius:16px;padding:14px;background:#222222;border-color:#3A3A3A;color:#F2F2F2}
-#t-sales .stat small{color:#A8A8A8;opacity:1}
-#t-sales .stat.hero{background:#E60000;border-color:#E60000;color:#FFFFFF}
-#t-sales .stat.hero small{color:#F2F2F2}
-body.sales-active{background:#141414;color:#F2F2F2;border-top-color:#141414}
-body.sales-active #top{background:#141414}
-body.sales-active nav{background:#222222;border-color:#3A3A3A}
-body.sales-active nav button{color:#A8A8A8}
-body.sales-active nav button.on{color:#E60000}
 </style>
 </head>
 <body>
@@ -122,6 +103,9 @@ body.sales-active nav button.on{color:#E60000}
 <section id="rep-sales" class="tab">
   <button class="backlink" data-back="sales"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Voltar a Vendas</button>
   <h1>Relatório de vendas</h1>
+  <h2>Totais gerais</h2>
+  <div class="grid" id="sTotais"></div>
+  <h2>Filtrar por datas</h2>
   <div class="seg"><button class="mini" data-act="fq" data-id="hoje">Hoje</button><button class="mini" data-act="fq" data-id="ontem">Ontem</button><button class="mini" data-act="fq" data-id="7">7 dias</button><button class="mini" data-act="fq" data-id="mes">Este mês</button></div>
   <div class="grid"><div><label class="note" for="f-de">De</label><input id="f-de" type="date" style="margin-top:4px"></div><div><label class="note" for="f-ate">Até</label><input id="f-ate" type="date" style="margin-top:4px"></div></div>
   <div class="grid" id="fstats" style="margin-top:12px"></div>
@@ -193,6 +177,8 @@ body.sales-active nav button.on{color:#E60000}
 <section id="rep-stock" class="tab">
   <button class="backlink" data-back="stock"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Voltar a Stock</button>
   <h1>Relatório de Stock</h1>
+  <h2>Totais gerais</h2>
+  <div class="grid" id="stTotais"></div>
   <h2>Filtrar período</h2>
   <div class="seg"><button class="mini" data-act="sfq" data-id="hoje">Hoje</button><button class="mini" data-act="sfq" data-id="ontem">Ontem</button><button class="mini" data-act="sfq" data-id="7">7 dias</button><button class="mini" data-act="sfq" data-id="mes">Este mês</button></div>
   <div class="grid"><div><label class="note" for="sf-de">De</label><input id="sf-de" type="date" style="margin-top:4px"></div><div><label class="note" for="sf-ate">Até</label><input id="sf-ate" type="date" style="margin-top:4px"></div></div>
@@ -261,10 +247,12 @@ function rFil(){
 function rSales(){rFil();
   var now=new Date(),d0=new Date().setHours(0,0,0,0),w0=Date.now()-6048e5,m0=new Date(now.getFullYear(),now.getMonth(),1).getTime();
   var sum=function(f){return S.sales.filter(function(s){return f(s.t)}).reduce(function(a,s){return a+s.val},0)};
-  var all=S.sales.reduce(function(a,s){return a+s.val},0);
+  var all=S.sales.reduce(function(a,s){return a+s.val},0),hojeL=S.sales.filter(function(s){return s.t>=d0});
+  var kh={};hojeL.forEach(function(s){var k=s.num||(s.cli?"n:"+String(s.cli).trim().toLowerCase():"");if(k)kh[k]=1});
   $("sstats").innerHTML='<div class="stat hero"><small>Vendido hoje</small><div class="big">'+mt(sum(function(t){return t>=d0}))+'</div></div>'+
    [["Últimos 7 dias",sum(function(t){return t>=w0})],["Este mês",sum(function(t){return t>=m0})]].map(function(p){return '<div class="stat"><small>'+p[0]+'</small><div class="big">'+mt(p[1])+'</div></div>'}).join("")+
-   '<div class="stat"><small>Total geral</small><div class="big">'+mt(all)+'</div></div><div class="stat"><small>N.º de vendas</small><div class="big">'+S.sales.length+'</div></div><div class="stat"><small>Megas disponíveis</small><div class="big">'+mbs(saldo())+'</div></div><div class="stat"><small>Enviados hoje</small><div class="big">'+mbs(-S.mb.filter(function(x){return x.tipo==="envio"&&x.t>=d0}).reduce(function(a,x){return a+x.mb},0))+'</div></div>';
+   '<div class="stat"><small>Vendas hoje</small><div class="big">'+hojeL.length+'</div></div><div class="stat"><small>Clientes</small><div class="big">'+Object.keys(kh).length+'</div></div><div class="stat"><small>Megas disponíveis</small><div class="big">'+mbs(saldo())+'</div></div><div class="stat"><small>Enviados hoje</small><div class="big">'+mbs(-S.mb.filter(function(x){return x.tipo==="envio"&&x.t>=d0}).reduce(function(a,x){return a+x.mb},0))+'</div></div>';
+  var st=$("sTotais");if(st)st.innerHTML='<div class="stat"><small>Total geral</small><div class="big">'+mt(all)+'</div></div><div class="stat"><small>N.º de vendas</small><div class="big">'+S.sales.length+'</div></div>';
   var l=S.sales.slice().sort(function(a,b){return b.t-a.t}).slice(0,30);
   $("slist").innerHTML=l.length?l.map(function(s){return '<div class="row"><div class="t"><b>'+esc(s.cli||"Cliente")+' · '+esc(s.meg||"megas")+'</b><small>'+fd(s.t)+(s.num?' · '+esc(s.num):'')+'</small></div><div class="acts"><b>'+mt(s.val)+'</b><button class="mini x" data-act="delsale" data-id="'+s.id+'" aria-label="Apagar venda">'+IC.x+'</button></div></div>'}).join(""):'<div class="empty">Ainda não há vendas registadas.</div>';
 }
@@ -284,7 +272,7 @@ function rUps(){
 function rAlerts(){
   $("alerts").innerHTML=alerts.map(function(a){return '<div class="al"><span>'+IC.clock+' '+esc(a.txt)+'</span><span>'+(hasNum(a.id)?'<button data-act="sendup" data-id="'+a.id+'">Enviar</button> ':'')+'<button data-act="dis" data-id="'+a.id+'">OK</button></span></div>'}).join("");
 }
-function rBal(){var b=saldo(),e=$("bal"),sales=cur==="sales";document.body.classList.toggle("sales-active",sales);if(e)e.innerHTML='<div class="balbar'+(b<=0?' neg':'')+'" data-tab="stock"><span style="display:flex;gap:8px;align-items:center">'+IC.data+' Megas disponíveis</span><b>'+mbs(b)+(Math.abs(b)>=1024?' (≈ '+nf(b/1024)+' GB)':'')+'</b></div>'}
+function rBal(){var b=saldo(),e=$("bal");if(e)e.innerHTML='<div class="balbar'+(b<=0?' neg':'')+'" data-tab="stock"><span style="display:flex;gap:8px;align-items:center">'+IC.data+' Megas disponíveis</span><b>'+mbs(b)+(Math.abs(b)>=1024?' (≈ '+nf(b/1024)+' GB)':'')+'</b></div>'}
 function nf(n){return Number(n||0).toLocaleString("pt-PT",{maximumFractionDigits:1})}
 function mbn(x){var n=parseFloat(String(x).replace(",",".").replace(/[^0-9.]/g,""));return n>0?n:0}
 function mbs(n){return nf(n)+" MB"}
@@ -298,7 +286,11 @@ function rMb(){
   var l=S.mb.slice().sort(function(a,b){return b.t-a.t}).slice(0,50);
   $("mlist").innerHTML=l.length?l.map(function(x){return '<div class="row"><div class="t"><b>'+lab[x.tipo]+(x.nota?' · '+esc(x.nota):'')+'</b><small>'+fd(x.t)+'</small></div><div class="acts"><b'+(x.mb<0?' style="color:var(--red)"':'')+'>'+(x.mb>0?'+':'−')+nf(Math.abs(x.mb))+' MB</b><button class="mini x" data-act="delmb" data-id="'+x.id+'" aria-label="Apagar movimento">'+IC.x+'</button></div></div>'}).join(""):'<div class="empty">Ainda não há movimentos de megas. Defina o saldo que tem agora.</div>'}
 function rStockReport(){
-  var from=pd($("sf-de").value),to=pd($("sf-ate").value),bx=function(label,value){return '<div class="stat"><small>'+label+'</small><div class="big">'+value+'</div></div>'};
+  var bx=function(label,value){return '<div class="stat"><small>'+label+'</small><div class="big">'+value+'</div></div>'};
+  var now=new Date(),d0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),e=S.mb.filter(function(x){return x.tipo==="envio"}),sm=function(f,t){return -e.filter(function(x){return x.t>=f&&(t==null||x.t<t)}).reduce(function(a,x){return a+x.mb},0)},month0=new Date(now.getFullYear(),now.getMonth(),1).getTime(),week0=new Date(d0);week0.setDate(week0.getDate()-6);
+  var totalMB=sm(0),totalVend=S.sales.reduce(function(t,x){return t+(x.val||0)},0),totalGasto=S.stock.reduce(function(t,x){return t+(x.val||0)},0),totalLucro=totalVend-totalGasto;
+  $("stTotais").innerHTML=bx("Total geral de megas",mbs(totalMB))+bx("Total geral de lucro",mt(totalLucro))+bx("Total geral de gasto em stock",mt(totalGasto));
+  var from=pd($("sf-de").value),to=pd($("sf-ate").value);
   if(!from||!to){$("lstats2").innerHTML='<div class="empty">Escolha as datas para ver os valores financeiros do período.</div>'}
   else{
     if(from>to){var tmp=from;from=to;to=tmp}
@@ -306,8 +298,7 @@ function rStockReport(){
     var sales=S.sales.filter(inRange),stock=S.stock.filter(inRange),sold=sales.reduce(function(t,x){return t+(x.val||0)},0),spent=stock.reduce(function(t,x){return t+(x.val||0)},0),profit=sold-spent;
     $("lstats2").innerHTML='<div class="stat hero"'+(profit<0?' style="background:var(--red);border-color:var(--red);color:var(--red-ink)"':'')+'><small>Lucro no período</small><div class="big">'+mt(profit)+'</div></div>'+bx("Vendido no período",mt(sold))+bx("Gasto em stock",mt(spent));
   }
-  var now=new Date(),d0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),e=S.mb.filter(function(x){return x.tipo==="envio"}),sm=function(f,t){return -e.filter(function(x){return x.t>=f&&(t==null||x.t<t)}).reduce(function(a,x){return a+x.mb},0)},month0=new Date(now.getFullYear(),now.getMonth(),1).getTime(),week0=new Date(d0);week0.setDate(week0.getDate()-6);
-  $("vstats").innerHTML=bx("Hoje",mbs(sm(d0)))+bx("Últimos 7 dias",mbs(sm(week0.getTime())))+bx("Este mês",mbs(sm(month0)))+bx("Total",mbs(sm(0)));
+  $("vstats").innerHTML=bx("Hoje",mbs(sm(d0)))+bx("Últimos 7 dias",mbs(sm(week0.getTime())))+bx("Este mês",mbs(sm(month0)));
   var rows=[],mx=1,i,f,v;
   for(i=0;i<7;i++){f=d0-i*864e5;v=sm(f,f+864e5);mx=Math.max(mx,v);rows.push([i===0?"Hoje":i===1?"Ontem":new Date(f).toLocaleDateString("pt-PT",{weekday:"short",day:"2-digit",month:"2-digit"}),v])}
   $("vdias").innerHTML=rows.map(function(r){return '<div class="row" style="display:block"><div style="display:flex;justify-content:space-between"><span>'+r[0]+'</span><b>'+mbs(r[1])+'</b></div><div style="height:6px;border-radius:3px;background:var(--line);margin-top:5px"><div style="height:6px;border-radius:3px;background:var(--g);width:'+Math.round(r[1]/mx*100)+'%"></div></div></div>'}).join("");
